@@ -70,9 +70,9 @@ class Running(Training):
         """Получаем величину затраченных калорий (бег)"""
         coeff_1 = 18   # Коээфицент каллорий 1
         coeff_2 = 20   # Коээфицент каллорий 2
-        calories: float = ((coeff_1 * self.get_mean_speed() - coeff_2) *
-                           self.weight / self.M_IN_KM *
-                           self.duration * 60)
+        calories: float = ((coeff_1 * self.get_mean_speed() - coeff_2)
+                           * self.weight / self.M_IN_KM
+                           * self.duration * 60)
         return calories
 
 
@@ -93,10 +93,10 @@ class SportsWalking(Training):
         coeff_1 = 0.035   # Коээфицент каллорий 1
         coeff_2 = 2       # Коээфицент каллорий 2
         coeff_3 = 0.029   # Коээфицент каллорий 3
-        calories: float = ((coeff_1 * self.weight +
-                            (self.get_mean_speed() ** coeff_2 //
-                             self.height) * coeff_3 * self.weight) *
-                           self.duration * 60)
+        calories: float = ((coeff_1 * self.weight
+                            + (self.get_mean_speed() ** coeff_2
+                               // self.height) * coeff_3 * self.weight)
+                           * self.duration * 60)
         return calories
 
 
@@ -118,16 +118,16 @@ class Swimming(Training):
 
     def get_mean_speed(self) -> float:
         """Получаем величину средней скорости для плавания"""
-        speed = (self.length_pool * self.count_pool / self.M_IN_KM /
-                 self.duration)
+        speed = (self.length_pool * self.count_pool / self.M_IN_KM
+                 / self.duration)
         return speed
 
     def get_spent_calories(self) -> float:
         """Получаем величину затраченных калорий (плавание)"""
         coeff_1 = 1.1   # Коээфицент каллорий 1
         coeff_2 = 2     # Коээфицент каллорий 2
-        calories: float = ((self.get_mean_speed() + coeff_1) * coeff_2 *
-                           self.weight)
+        calories: float = ((self.get_mean_speed() + coeff_1) * coeff_2
+                           * self.weight)
         return calories
 
     def get_distance(self) -> float:
