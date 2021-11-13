@@ -1,39 +1,33 @@
+import dataclasses
 from typing import Dict, Type
+from dataclasses import asdict, dataclass
 
 
+@dataclass()
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float,
-                 ) -> None:
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
-        self.message = ('Тип тренировки: {}; '
-                        'Длительность: {:.3f} ч.; '
-                        'Дистанция: {:.3f} км; '
-                        'Ср. скорость: {:.3f} км/ч; '
-                        'Потрачено ккал: {:.3f}.'
-                        )
+    training_type: str
+    duration: float
+    distance: float
+    speed: float
+    calories: float
+    message = ('Тип тренировки: {training_type}; '
+               'Длительность: {duration:.3f} ч.; '
+               'Дистанция: {distance:.3f} км; '
+               'Ср. скорость: {speed:.3f} км/ч; '
+               'Потрачено ккал: {calories:.3f}.'
+               )
 
     def get_message(self) -> str:
         """Возвращает шаблон для вывода сообщения в терминал."""
-        return self.message.format(self.training_type, self.duration,
-                                   self.distance, self.speed,
-                                   self.calories)
+        return self.message.format(**asdict(self))
 
 
 class Training:
     """Базовый класс тренировки."""
     LEN_STEP = 0.65
     M_IN_KM = 1000
-    minutes_in_hour = 60
+    MINUTES_IN_HOUR = 60
 
     def __init__(self,
                  action: int,
@@ -75,7 +69,7 @@ class Running(Training):
         coeff_2 = 20
         return ((coeff_1 * self.get_mean_speed() - coeff_2)
                 * self.weight / self.M_IN_KM
-                * self.duration * self.minutes_in_hour)
+                * self.duration * self.MINUTES_IN_HOUR)
 
 
 class SportsWalking(Training):
@@ -97,7 +91,7 @@ class SportsWalking(Training):
         return ((coeff_1 * self.weight
                  + (self.get_mean_speed() ** coeff_2
                     // self.height) * coeff_3 * self.weight)
-                * self.duration * self.minutes_in_hour)
+                * self.duration * self.MINUTES_IN_HOUR)
 
 
 class Swimming(Training):
