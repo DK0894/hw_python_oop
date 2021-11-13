@@ -1,3 +1,6 @@
+from typing import Dict, Type
+
+
 class InfoMessage:
     """Информационное сообщение о тренировке."""
     def __init__(self,
@@ -12,22 +15,25 @@ class InfoMessage:
         self.distance = distance
         self.speed = speed
         self.calories = calories
-        self.massage = (f'Тип тренировки: {training_type}; '
-                        f'Длительность: {duration:.3f} ч.; '
-                        f'Дистанция: {distance:.3f} км; '
-                        f'Ср. скорость: {speed:.3f} км/ч; '
-                        f'Потрачено ккал: {calories:.3f}.'
+        self.message = ('Тип тренировки: {}; '
+                        'Длительность: {:.3f} ч.; '
+                        'Дистанция: {:.3f} км; '
+                        'Ср. скорость: {:.3f} км/ч; '
+                        'Потрачено ккал: {:.3f}.'
                         )
 
     def get_message(self) -> str:
         """Возвращает шаблон для вывода сообщения в терминал."""
-        return self.massage
+        return self.message.format(self.training_type, self.duration,
+                                   self.distance, self.speed,
+                                   self.calories)
 
 
 class Training:
     """Базовый класс тренировки."""
     LEN_STEP = 0.65
     M_IN_KM = 1000
+    minutes_in_hour = 60
 
     def __init__(self,
                  action: int,
@@ -67,10 +73,9 @@ class Running(Training):
         """Получаем величину затраченных калорий (бег)"""
         coeff_1 = 18
         coeff_2 = 20
-        minutes_in_hour = 60
         return ((coeff_1 * self.get_mean_speed() - coeff_2)
                 * self.weight / self.M_IN_KM
-                * self.duration * minutes_in_hour)
+                * self.duration * self.minutes_in_hour)
 
 
 class SportsWalking(Training):
@@ -89,11 +94,10 @@ class SportsWalking(Training):
         coeff_1 = 0.035
         coeff_2 = 2
         coeff_3 = 0.029
-        minutes_in_hour = 60
         return ((coeff_1 * self.weight
                  + (self.get_mean_speed() ** coeff_2
                     // self.height) * coeff_3 * self.weight)
-                * self.duration * minutes_in_hour)
+                * self.duration * self.minutes_in_hour)
 
 
 class Swimming(Training):
@@ -130,20 +134,25 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    dict_workout_type = {'SWM': Swimming,
-                         'RUN': Running,
-                         'WLK': SportsWalking,
-                         }
+    dict_workout_type: Dict[str, Type[Training]] = {'SWM': Swimming,
+                                                    'RUN': Running,
+                                                    'WLK': SportsWalking
+                                                    }
     try:
         return dict_workout_type[workout_type](*data)
     except KeyError:
-        print('Incorrect type of training')
+        print(f'{workout_type} - Incorrect type of training. '
+              f'Workout types supported - Swimming (SWM), '
+              f'Running (RUN), SportsWalking (WLK).')
+        exit()
+    except TypeError:
+        print('Incorrect amount of data from sensors')
         exit()
 
 
 def main(training: Training) -> None:
     """Главная функция."""
-    info: InfoMessage = Training.show_training_info(training)
+    info: InfoMessage = training.show_training_info()
     print(InfoMessage.get_message(info))
 
 
