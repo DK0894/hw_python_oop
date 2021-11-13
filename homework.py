@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict, Type
 from dataclasses import asdict, dataclass
 
